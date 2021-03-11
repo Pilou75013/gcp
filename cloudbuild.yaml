@@ -1,0 +1,22 @@
+steps:
+  - name: maven:latest
+    entrypoint: 'mvn'
+    args: ['clean', 'install', '-DskipTests']
+
+steps:
+  - name: node:latest
+    dir: 'node'
+    entrypoint: 'npm'
+    args: ['install']
+
+
+steps:
+ - name: 'gcr.io/cloud-builders/docker'
+   entrypoint: 'bash'
+   args: ['-c', 'docker login --username=pilou75013 --password=Poutre75']
+ - name: 'gcr.io/cloud-builders/docker'
+   entrypoint: 'bash'
+   args: ['-c', 'docker build -t pilou75013/cicd:latest .']
+ - name: 'gcr.io/cloud-builders/docker'
+   entrypoint: 'bash'
+   args: ['-c', 'docker push pilou75013/cicd:latest']

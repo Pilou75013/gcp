@@ -1,0 +1,70 @@
+maven-build:
+  image: maven:latest
+  stage: build
+  script: "mvn clean install"
+  artifacts:
+    paths:
+      - target/*.jar
+
+
+node-build :
+  image: node:latest
+  stage: build
+  script: 
+    - cd node
+    - npm install
+
+docker-build:
+  image: docker:stable
+  services:
+   - docker:dind
+  before_script:
+    - docker info
+  stage: deploy
+  script:
+    - docker login -u choca777 -p Cyborg99
+    - export DOCKER_HOST=tcp://docker:2375/
+    - docker build -t choca777/cicd1:latest .
+    - docker push choca777/cicd1:latest
+  only:
+  - master    
+
+
+docker-build-node:
+  image: docker:stable
+  services:
+   - docker:dind
+  before_script:
+    - docker info
+  stage: deploy
+  script:
+    - docker login -u choca777 -p Cyborg99
+    - export DOCKER_HOST=tcp://docker:2375/
+    - docker build -t choca777/cicd1:nodelatest .
+    - docker push choca777/cicd1:nodelatest
+  only:
+  - master    
+
+### TEST deploy ON GCP manque 2 fichiers de confs
+
+#deploy-on-google-cloud:
+#  stage: test
+#  image: google/cloud-sdk
+#  services:
+#    - docker:dind
+#  script:
+#    - gcloud auth activate-service-account --key-file gcloud-service-key.json
+#    - gcloud config set project CICD7
+#    - gcloud builds submit . --config=cloudbuild.yaml
+
+
+
+
+
+
+
+
+
+
+
+
